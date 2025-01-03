@@ -118,15 +118,14 @@ export async function updateInvoice(
 }
 
 export async function deleteInvoice(id: string) {
-  throw new Error("Failed to Delete Invoice");
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
+    revalidatePath("/dashboard/invoices");
   } catch (error) {
     console.error(error);
-    return {
-      message: "Database Error: Failed to Delete Invoice",
-    };
+    throw new Error("Failed to Delete Invoice");
+    // return { // NOTE: This doesn't work since the caller expects void as a return, and we can't use the useActionState hook here since this is a server component
+    //   message: "Database Error: Failed to Delete Invoice",
+    // };
   }
-
-  revalidatePath("/dashboard/invoices");
 }
